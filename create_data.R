@@ -310,6 +310,3 @@ main<-function(){
 
 main()
 
-11280/4caeaf9c
-eaf
-
