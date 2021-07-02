@@ -1,4 +1,4 @@
-These scripts are to be used with the Coprus Interlangue (CIL) data located on nakala.fr
+These scripts are to be used with the Corpus Interlangue (CIL) data located on nakala.fr
 
 Each script has a specific function detailed below. 
 
