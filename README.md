@@ -4,7 +4,7 @@ These scripts are to be used with the Corpus Interlangue (CIL) data located on n
 
 Each script has a specific function detailed below. 
 
-Create_data.R: 
+#Create_data.R: 
 1. Enter working directory
 2. Enter CIL collection ID (found on nakala.fr) 11280/4caeaf9c
 3. Enter the file type containing learner texts: eaf for the conversation and .txt for the learner writings. 
