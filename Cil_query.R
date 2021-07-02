@@ -1,5 +1,11 @@
 install.packages("nametagger")
-
+install.packages("lattice")
+install.packages("igraph")
+install.packages("udpipe")
+install.packages("ggplot2")
+install.packages("ggraph")
+install.packages("xml2")
+install.packages("stringr")
 
 library(udpipe)
 library(stringr)
@@ -85,12 +91,12 @@ main<-function(){
   df_en=df[df$l2=="eng	English",]
   x_en=model_en(df_en,wd)
  
-  #creation de jeu de donn�e pour le fran�ais
+  #creation de jeu de donnée pour le français
   write.csv(x_fr,"m_data_fr.csv")
-  #creation de jeu de donn�e pour l'anglais
+  #creation de jeu de donnée pour l'anglais
   write.csv(x_en,"m_data_en.csv")
   
-  print("fichiers créés")
+  print("fichiers crÃ©Ã©s")
   }
 main()
 
