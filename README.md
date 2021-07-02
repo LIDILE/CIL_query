@@ -1,6 +1,6 @@
 2/07/2021
 
-CIL_query is a suite of R scripts to be used with the Corpus Interlangue (CIL) data located on nakala.fr
+CIL_query is a suite of R scripts to query the Corpus Interlangue (CIL) data located on nakala.fr
 
 Each script has a specific function detailed below. 
 
