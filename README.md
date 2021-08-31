@@ -5,7 +5,7 @@ CIL_query is a suite of R scripts to query the Corpus Interlangue (CIL) data loc
 Each script has a specific function detailed below. 
 
 **Create_data.R: **
-1. Enter working directory
+1. Enter working directory.
 2. Enter CIL collection ID (found on nakala.fr) 11280/4caeaf9c
 3. Enter the file type containing learner texts: eaf for the conversation and .txt for the learner writings. 
 4. Scans the CIL collection. 
