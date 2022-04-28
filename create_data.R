@@ -16,12 +16,13 @@ library(stringi)
 library(stringr)
 library(data.table)
 getwd()
-setwd("D:/script")
+setwd("D:/script") #Windows based 
+setwd("~/path/pathto/scriptdirectory")#Linux based 
 header<-function(key){
   
   headers = c(
     `accept` = 'application/json'
-    #`X-API-KEY` = key
+    #'X-API-KEY` = key
   )
   
   
@@ -48,10 +49,11 @@ data<-function(id_collection,nbPage,header,extension){
     contenu <- httr::GET(u, httr::add_headers(.headers=header), query = param(toString(i),'100'))
     #recuperation du fichier json retourné par la requete
     get2json<- content(contenu, as = "parsed")
-   
+  
     #recupérer la partie data du fichier JSON
     c=getMetasFichier(get2json[['data']],extension)
     d=getFicherCsv(get2json[['data']])
+    print(length(d))
     createcsv=CreateCsv(c,d,extension,i)
     #convertir en les dataframe en liste lors de la separation
     #liste contenant le datadrame des eaf
@@ -59,34 +61,23 @@ data<-function(id_collection,nbPage,header,extension){
     #liste contenant le dataframe des csv
     listCsv[i]=list(createcsv[[2]])
     
-    #convertir les listes en dataframe avant de les fusionner
-    df <- data.frame(matrix(unlist(createcsv[[1]]), nrow=length(createcsv[[1]]), byrow=TRUE),stringsAsFactors=FALSE)
-    df=df%>%
-      setNames(c("id_learner","texte"))
-    #print(df)
-    dfCsv=data.frame(matrix(unlist(createcsv[[2]]), nrow=length(createcsv[[2]]), byrow=TRUE),stringsAsFactors=FALSE)
-    dCsv=dfCsv%>%
-      setNames(c("id_learner","n_years_L2","sex","birth_country","previous_country1_time","previous_country1",
-                 "previous_country2_time","previous_country2","previous_country3_time","previous_country3",
-                 "current_country","education","l1","l1_variety","l2","l2_autoevaluation_written","l3",
-                 "l3_autoevaluation_oral","l3_autoevaluation_written","date_recording","place_recording",
-                 "birth_year","occupation","duration_conv","duration_read","CECRecrit_Etendue",
-                 "CECRecrit_Coherence","CECRecrit_Correction","CECRecrit_Description","CECRecrit_Argumentation",
-                 "CECRecrit_Competence_generale_CECRL","CECRoral_Etendue","CECRoral_Correction","CECRoral_Aisance",
-                 "CECRoral_Interaction","CECRoral_Coherence","CECRoral_Phonologie","CECRoral_Niveau_general_CECRL"))
-    
+    df <- data.frame(t(sapply(createcsv[[1]],c)))
+    dfCsv= data.frame(t(sapply(createcsv[[2]],c)))
+ 
+ 
     
     #fusion des deux dataframes obtenu plus haut mais l'on les mets dans une liste
     #il faudra par la suite trouver un moyenne de transformer la liste de dataframe en un dataframe
-    dataFram[i]=list(cbind(df,dCsv))
+    dataFram[i]=list(cbind(df,dfCsv))
   }
-  
-  #ajouter un dataFram avec le numero de la page s'il y a de nouvelle page
-  #dataFrame[[5]]
-  dt=rbind(dataFram[[1]],dataFram[[2]],dataFram[[3]],dataFram[[4]])
-  write_delim(dt,"my_data.csv", delim = ",")
-  print('Fichier créé dans le repertoire:')
-  print(getwd())
+  dftest = dataFram[[1]]
+  for (j in 2:length(dataFram)) {
+    dftest = rbind(dftest,dataFram[[j]])
+  }
+#print(dftest)
+fwrite(dftest, file ="myData.csv")
+ print('Fichier créé dans le repertoire:')
+ print(getwd())
 }
 getMetasFichier<-function(dt,ext){
   #initilisation liste et elements de parcours
@@ -109,7 +100,7 @@ getMetasFichier<-function(dt,ext){
             sh[k]=dt[[i]]$files[[j]]$sha1
             langue[k]=dt[[i]]$metas[[1]]$lang
             uri[k]=gsub("https://doi.org/","",dt[[i]]$uri)
-            k=k+1
+                       k=k+1
           }
         }
         
@@ -122,7 +113,7 @@ getMetasFichier<-function(dt,ext){
   return(lt)
 }
 getFicherCsv<-function(dt){
- 
+  
   sh=list()
   uri=list()
   nom=list()
@@ -140,6 +131,7 @@ getFicherCsv<-function(dt){
             nom[k]=dt[[i]]$files[[j]]$name
             sh[k]=dt[[i]]$files[[j]]$sha1
             uri[k]=gsub("https://doi.org/","",dt[[i]]$uri)
+            print(dt[[i]]$uri)
             k=k+1
           }
         }
@@ -148,6 +140,7 @@ getFicherCsv<-function(dt){
       c=c+1
     }
   }
+
   #creation d'une liste contant les metadonnées 
   lt=list(nom,sh,uri)
   print(lt)
@@ -167,7 +160,11 @@ CreateCsv<- function(c,d,ext,i){
   idCsv=d[[3]]
   listCsv=list()
   #former un dataframe à deux colonnes (nom du fichier et le texte contenu dans le fichier )
-  while (k<=length(nom)) {
+print('idCsv') 
+ print(idCsv)
+ print('nom')
+  print(nom)
+   while (k<=length(nom)) {
     URL=paste('https://api.nakala.fr/data',id_data[[k]], sh[[k]], sep='/')
     #URL="https://apitest.nakala.fr/data/10.34847/nkl.801e4wy5/0d81dbaa8bc6cf2679f8506d589e7371649cc6e2"
     urlCsv=paste('https://api.nakala.fr/data',idCsv[[k]], shaCsv[[k]], sep='/')
@@ -266,7 +263,7 @@ CreateCsv<- function(c,d,ext,i){
       
       
     }
-   
+    
     
     #print(rdCsv)
     rd<- summarize(group_by(rdCsv,id_learner,n_years_L2,sex,birth_country,previous_country1_time,previous_country1,
@@ -286,7 +283,7 @@ CreateCsv<- function(c,d,ext,i){
   
   #retourner un liste contenant deux dataframe
   return(list(lt,listCsv))
-
+  
   
 }
 recupPage<-function(id_collection,param,header){
@@ -297,13 +294,13 @@ recupPage<-function(id_collection,param,header){
   contenu <- httr::GET(u, httr::add_headers(.headers=header), query = param)
   #recuperation du fichier json retourné par la requete
   get2json<- content(contenu, as = "parsed")
- 
+  
   #la partie data du tableau json
   return(get2json[['lastPage']])
   
 }
 main<-function(){
-  #key=as.character(readline("Entrer la clé de connexion  "))
+  key=as.character(readline("Entrer la clé de connexion  "))
   id_collection=as.character(readline("Entrer l'identifiant de la collection  "))
   extension=as.character(readline("Entrer l'extension des fichiers que vous voulez avoir  "))
   #On cherche le nombre total de page avec 100 resultats par parge 
@@ -315,4 +312,3 @@ main<-function(){
 }
 
 main()
-
